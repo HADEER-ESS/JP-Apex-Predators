@@ -10,7 +10,9 @@ import MapKit
 
 struct PredatorDetails: View {
     let predator : ApexPredator
+    
     @State var position : MapCameraPosition
+    @Namespace var nameSpace
     
     var body: some View {
         GeometryReader{ geo in
@@ -44,9 +46,15 @@ struct PredatorDetails: View {
                     
                     // Map View
                     NavigationLink{
-                        PredatorMap(
-                            position: position
-                        )
+                        PredatorMap(position: .camera(MapCamera(
+                            centerCoordinate: predator.location,
+                            distance: 1000,
+                            heading: 250,
+                            pitch: 80
+                        )))
+                        .navigationTransition(.zoom(
+                            sourceID: 1, in: nameSpace
+                        ))
                     }
                     label:{
                         Map(position: $position){
@@ -75,6 +83,7 @@ struct PredatorDetails: View {
                         }
                         .clipShape(.rect(topLeadingRadius: 15))
                     }
+                    .matchedTransitionSource(id: 1, in: nameSpace)
                     // Appears In Text
                     Text("Appears in:")
                         .bold()
